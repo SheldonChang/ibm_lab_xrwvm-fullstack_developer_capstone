@@ -6,10 +6,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 backend_url = os.getenv(
-    'backend_url', default="http://localhost:3030")
+    'backend_url', default="https://ebscream4me-3030.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai")
 sentiment_analyzer_url = os.getenv(
     'sentiment_analyzer_url',
-    default="http://localhost:5050/")
+    default="https://sentianalyzer.1k9ip34x1j8s.us-south.codeengine.appdomain.cloud")
 
 def get_request(endpoint, **kwargs):
     params = ""
