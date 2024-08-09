@@ -2,20 +2,33 @@
 import requests
 import os
 from dotenv import load_dotenv
+import json
+from django.http import JsonResponse
 
 load_dotenv()
 
 backend_url = os.getenv(
-    'backend_url', default="https://ebscream4me-3030.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai")
+    'backend_url',
+    default=(
+        "https://ebscream4me-3030.theiadockernext-0-labs-prod"
+        "-theiak8s-4-tor01.proxy.cognitiveclass.ai"
+    )
+)
+
 sentiment_analyzer_url = os.getenv(
     'sentiment_analyzer_url',
-    default="https://sentianalyzer.1kdwlabm2toq.us-south.codeengine.appdomain.cloud/")
+    default=(
+        "https://sentianalyzer.1kdwlabm2toq.us-"
+        "south.codeengine.appdomain.cloud/"
+    )
+)
+
 
 def get_request(endpoint, **kwargs):
     params = ""
-    if(kwargs):
-        for key,value in kwargs.items():
-            params=params+key+"="+value+"&"
+    if (kwargs):
+        for key, value in kwargs.items():
+            params = params+key+"="+value+"&"
 
     request_url = backend_url+endpoint+"?"+params
 
@@ -30,6 +43,7 @@ def get_request(endpoint, **kwargs):
         print(f"Network exception occurred{e}")
         return None
 
+
 def analyze_review_sentiments(text):
     request_url = sentiment_analyzer_url+"analyze/"+text
     try:
@@ -42,22 +56,26 @@ def analyze_review_sentiments(text):
         print(f"Unexpected {err=}, {type(err)=}")
         print("Network exception occurred")
 
+
 def post_review(data_dict):
     request_url = backend_url+"/insert_review"
     try:
-        response = requests.post(request_url,json=data_dict)
+        response = requests.post(request_url, json=data_dict)
         print(response.json())
         return response.json()
-    except:
+    except Exception as err:
+        print(f"Unexpected {err=}, {type(err)=}")
         print("Network exception occurred")
 
+
 def add_review(request):
-    if(request.user.is_anonymous == False):
+    if (request.user.is_anonymous is False):
         data = json.loads(request.body)
         try:
             response = post_review(data)
-            return JsonResponse({"status":200})
-        except:
-            return JsonResponse({"status":401,"message":"Error in posting review"})
+            return JsonResponse({"status": 200, "ret": response})
+        except Exception as err:
+            return JsonResponse({"status": 401,
+                                "message": f"Error in posting review {err}"})
     else:
-        return JsonResponse({"status":403,"message":"Unauthorized"})
+        return JsonResponse({"status": 403, "message": "Unauthorized"})
