@@ -1,5 +1,5 @@
 # Uncomment the imports below before you add the function code
-# import requests
+import requests
 import os
 from dotenv import load_dotenv
 
@@ -9,7 +9,7 @@ backend_url = os.getenv(
     'backend_url', default="https://ebscream4me-3030.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai")
 sentiment_analyzer_url = os.getenv(
     'sentiment_analyzer_url',
-    default="https://sentianalyzer.1k9ip34x1j8s.us-south.codeengine.appdomain.cloud")
+    default="https://sentianalyzer.1kdwlabm2toq.us-south.codeengine.appdomain.cloud/")
 
 def get_request(endpoint, **kwargs):
     params = ""
@@ -23,16 +23,20 @@ def get_request(endpoint, **kwargs):
     try:
         # Call get method of requests library with URL and parameters
         response = requests.get(request_url)
+        print(f"{request_url} : {response.json()}")
         return response.json()
-    except:
+    except Exception as e:
         # If any error occurs
-        print("Network exception occurred")
+        print(f"Network exception occurred{e}")
+        return None
 
 def analyze_review_sentiments(text):
     request_url = sentiment_analyzer_url+"analyze/"+text
     try:
         # Call get method of requests library with URL and parameters
         response = requests.get(request_url)
+        print(f"{request_url} : {response.json()}")
+
         return response.json()
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")

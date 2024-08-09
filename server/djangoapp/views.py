@@ -85,19 +85,26 @@ def get_dealerships(request, state="All"):
     else:
         endpoint = "/fetchDealers/"+state
     dealerships = get_request(endpoint)
+    print(f'SS[{dealerships}]')
     return JsonResponse({"status":200,"dealers":dealerships})
 
 # Create a `get_dealer_reviews` view to render the reviews of a dealer
-def get_dealer_reviews(request,dealer_id):
+def get_dealer_reviews(request, dealer_id):
+    print(f'get_dealer_reviews: {dealer_id}')
     if(dealer_id):
         endpoint = "/fetchReviews/dealer/"+str(dealer_id)
+        print(f'***************** endpoint: {endpoint}')
         reviews = get_request(endpoint)
         for review_detail in reviews:
             response = analyze_review_sentiments(review_detail['review'])
-            print(response)
-            review_detail['sentiment'] = response['sentiment']
+            if response and 'sentiment' in response:
+                review_detail['sentiment'] = response['sentiment']
+            else:
+                review_detail['sentiment'] = "Unknown"
+        print(f'****************reviews: {reviews}')
         return JsonResponse({"status":200,"dealer":reviews})
     else:
+        print(f'****************Request: ')
         return JsonResponse({"status":400,"message":"Bad Request"})
 
 # Create a `get_dealer_details` view to render the dealer details
